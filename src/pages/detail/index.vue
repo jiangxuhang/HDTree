@@ -42,6 +42,9 @@ export default {
     })
     }
   },
+  onLoad () {
+    this.article = "<div>请稍等</div>"
+  },
   mounted() {
     this.loading();
   },

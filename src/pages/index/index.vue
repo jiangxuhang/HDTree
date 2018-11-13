@@ -2,11 +2,11 @@
   <section class="content">
     <nav class="navHeader" @click="selectChange">
       <div :class="{active:num == 1}" data-id="1">全部</div>
-      <div :class="{active:num == 2}" data-id="2">推荐</div>
+      <div :class="{active:num == 2}" data-id="2">收藏</div>
       <div :class="{active:num == 3}" data-id="3">更多</div>
       <div :class="{active:num == 4}" data-id="4">分享</div>
     </nav>
-    <article class="infoItem" v-for='(article,index) in saveArr' :key="index">
+    <!-- <article class="infoItem" v-for='(article,index) in saveArr' :key="index">
       <dl class="info">
         <dt class="detail">
           <dd class="name">
@@ -14,7 +14,7 @@
           </dd>
           <dd class="infoBottom">
             <div>{{article.school}}</div>
-            <div><!-- {{article.comment}} 评论--></div>
+            <div> {{article.comment}} 评论</div>
             <div>{{article.date}}</div>
           </dd>
         </dt>
@@ -24,7 +24,8 @@
         </dt>
       </dl>
     </article>
-    <article class="infoItem" v-for='article in info' :key="article._id" @click="toDetail" :data-detail="article.ID">
+     -->
+    <article class="infoItem" v-for='(article,index) in info' :key="index" @click="toDetail" :data-detail="article.ID">
       <dl class="info">
         <dt class="detail">
           <dd class="name">
@@ -36,7 +37,7 @@
             <div>{{article.date}}</div>
           </dd>
         </dt>
-        <dt class="imageContent" @click.stop="star" :data-id="article._id">
+        <dt class="imageContent" @click.stop="star" :data-id="index">
           <img src="../../images/flag0.png" v-if="article.save==false">
           <img src="../../images/flag1.png" v-else-if="article.save==true">
         </dt>
@@ -69,6 +70,7 @@ export default {
     // }],
     num:1,
     info:[],
+    trans:[],
     offset:0,
     index:10,
     id:0,
@@ -76,9 +78,14 @@ export default {
   },
   methods: {
     //导航栏选择
-    selectChange (e) {
+    async selectChange (e) {
       let targetValue = e.target.dataset.id
       this.num = targetValue
+      if (this.num == 1) {
+        this.info = this.trans
+      } else if (this.num == 2) {
+        this.info = await wx.getStorageSync('saveArr')
+      }
     },
     //进入详情页
     toDetail (e) {
@@ -88,40 +95,44 @@ export default {
     //收藏
     async star (e) {
       let id = e.currentTarget.dataset.id
-      if (this.info[id].save) {
-        //取消收藏
-        let saveArr = await wx.getStorageSync("saveArr")
-        for (let i = 0; i < saveArr.length; i++) {
-          if (saveArr[i]._id == id) {
-            saveArr.splice(i, 1)
-            break
-          }
-        }
-        console.log('delete',saveArr)
-        await wx.setStorageSync("saveArr",saveArr)
-        this.saveArr = saveArr
-        this.info[id].save = false
-      } else {
-        //收藏
+      if (this.num == 1) {
+        let item = this.info[id]
         let saveArr = await wx.getStorageSync("saveArr")
         if (!saveArr) {
-         saveArr = []
+          saveArr = []
         }
-        this.info[id].save = true
-        saveArr.push(this.info[id])
-        await wx.setStorageSync("saveArr",saveArr)
-        this.saveArr = saveArr
-        console.log('saveArr',saveArr)
+        if (!item.save) {
+          for (let i = 0; i < saveArr.length; i++) {
+            if(saveArr[i].ID == item.ID) {
+              this.info[id].save = true
+              return
+            }
+          }
+          item.save = true
+          saveArr.push(item)
+          await wx.setStorageSync("saveArr", saveArr)
+        } else {
+          item.save = false
+          let ID = item.ID
+          console.log('ID',ID)
+          for (let i = 0; i < saveArr.length; i++) {
+            if (saveArr[i].ID == ID) {
+              saveArr.splice(i, 1)
+              await wx.setStorageSync("saveArr", saveArr)
+            }
+          }
+        }
+      } else if (this.num == 2) {
+        let saveArr = await wx.getStorageSync("saveArr")
+        if (saveArr[id].save) {
+          saveArr.splice(id, 1)
+          await wx.setStorageSync("saveArr", saveArr)
+          this.info = saveArr
+        }
       }
 
     },
-    async unStar (e) {
-      let id = e.currentTarget.dataset.id
-      let saveArr = await wx.getStorageSync("saveArr")
-      saveArr.splice(id, 1)
-      await wx.setStorageSync("saveArr",saveArr)
-      this.saveArr = saveArr
-    }
+
   },
   async onLoad () {
     this.saveArr = await wx.getStorageSync("saveArr")
@@ -137,6 +148,7 @@ export default {
       this.id++
       return value
     })
+    this.trans = this.info
     console.log('info', this.info)
   },
   async onReachBottom () {
@@ -154,6 +166,7 @@ export default {
       return value
     })
     this.info = this.info.concat(info.data)
+    this.trans = this.info.concat(info.data)
   }
 }
 </script>
