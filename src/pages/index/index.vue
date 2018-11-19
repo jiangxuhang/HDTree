@@ -6,26 +6,7 @@
       <div :class="{active:num == 3}" data-id="3">更多</div>
       <div :class="{active:num == 4}" data-id="4">分享</div>
     </nav>
-    <!-- <article class="infoItem" v-for='(article,index) in saveArr' :key="index">
-      <dl class="info">
-        <dt class="detail">
-          <dd class="name">
-            {{article.company}}
-          </dd>
-          <dd class="infoBottom">
-            <div>{{article.school}}</div>
-            <div> {{article.comment}} 评论</div>
-            <div>{{article.date}}</div>
-          </dd>
-        </dt>
-        <dt class="imageContent" @click.stop="unStar" :data-id="index">
-          <img src="../../images/flag0.png" v-if="article.save==false">
-          <img src="../../images/flag1.png" v-else-if="article.save==true">
-        </dt>
-      </dl>
-    </article>
-     -->
-    <article class="infoItem" v-for='(article,index) in info' :key="index" @click="toDetail" :data-detail="article.ID">
+    <article v-if="num == 1 || num == 2" class="infoItem" v-for='(article,index) in info' :key="index" @click="toDetail" :data-detail="article.ID">
       <dl class="info">
         <dt class="detail">
           <dd class="name">
@@ -43,11 +24,13 @@
         </dt>
       </dl>
     </article>
+    <More v-if="num == 3"></More>
   </section>
 </template>
 
 <script>
 import { get,post } from '@/utils/index'
+import More from './more'
 export default {
   data:{
     // info:[{
@@ -75,6 +58,9 @@ export default {
     index:10,
     id:0,
     saveArr:[]
+  },
+  components: {
+    More
   },
   methods: {
     //导航栏选择
@@ -138,7 +124,7 @@ export default {
     this.saveArr = await wx.getStorageSync("saveArr")
     let url = 'http://132.232.202.22/XZ/info'
     let info = await get(url, {
-      school:'hlju',
+      school:'rand',
       offset:this.offset,
       index:this.index
     })
@@ -152,10 +138,13 @@ export default {
     console.log('info', this.info)
   },
   async onReachBottom () {
+    if (this.num != 1) {
+      return ''
+    }
     this.offset += 10
     let url = 'http://132.232.202.22/XZ/info'
     let info = await get(url, {
-      school:'hlju',
+      school:'rand',
       offset:this.offset,
       index:this.index
     })
