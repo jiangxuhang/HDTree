@@ -28,4 +28,14 @@ export default {
   -webkit-transition: width 2s;
   -o-transition: width 2s;
 }
+.externallayout{
+  position: fixed;
+  height: 100%;
+  width: 100%;
+}
+.backgroundimg
+{
+  width: 100%;
+  height: 100%;
+}
 </style>

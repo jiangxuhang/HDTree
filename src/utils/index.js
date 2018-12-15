@@ -1,24 +1,24 @@
-export function get (url, data, header) {
-  return request(url, 'GET', data)
+function formatNumber (n) {
+  const str = n.toString()
+  return str[1] ? str : `0${str}`
 }
 
-export function post (url, data, header) {
-  return request(url, 'POST', data)
+export function formatTime (date) {
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+
+  const hour = date.getHours()
+  const minute = date.getMinutes()
+  const second = date.getSeconds()
+
+  const t1 = [year, month, day].map(formatNumber).join('/')
+  const t2 = [hour, minute, second].map(formatNumber).join(':')
+
+  return `${t1} ${t2}`
 }
 
-function request (url,method,data,header={"Content-Type":"application/x-www-form-urlencoded"}) {
-  return new Promise((resolve, reject) => {
-    wx.request({
-      data,
-      method,
-      header,
-      url,
-      success:function (res) {
-        resolve(res)
-      },
-      error:function (err) {
-        reject(err)
-      }
-    })
-  })
+export default {
+  formatNumber,
+  formatTime
 }

@@ -1,17 +1,17 @@
 {
   "pages": [
     "pages/index/main",
-    "pages/logs/main",
-    "pages/linkUs/main",
-    "pages/detail/main"
+    "pages/login/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#6A13FE",
-    "navigationBarTitleText": "骆驼校招",
+    "navigationBarBackgroundColor": "#52C3DD",
+    "navigationBarTitleText": "黑大树",
     "navigationBarTextStyle": "light"
   },
   "navigateToMiniProgramAppIdList": [
-    "wx9dfd0ee8c2417c1a"
+    "wx1636027207e6fb44",
+    "wxde2483aafa70e9da",
+    "wxf55966fb59609a71"
   ]
 }
